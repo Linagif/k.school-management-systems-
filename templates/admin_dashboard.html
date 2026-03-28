@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block sidebar %}
+<li class="nav-item">
+    <a class="nav-link active" href="{% url 'admin_dashboard' %}">
+        <i class="bi bi-speedometer2"></i> Dashboard
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'admin_students' %}">
+        <i class="bi bi-people"></i> Students
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'admin_marks' %}">
+        <i class="bi bi-clipboard-data"></i> All Marks
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'admin_attendance' %}">
+        <i class="bi bi-calendar-check"></i> Attendance
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="/admin/">
+        <i class="bi bi-gear"></i> Admin Panel
+    </a>
+</li>
+{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 text-white"><i class="bi bi-speedometer2"></i> Admin Dashboard</h1>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="stat-card text-center">
+            <i class="bi bi-people text-primary"></i>
+            <h3 class="mt-2">{{ total_students }}</h3>
+            <p class="text-muted mb-0">Total Students</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card text-center">
+            <i class="bi bi-person-badge text-success"></i>
+            <h3 class="mt-2">{{ total_teachers }}</h3>
+            <p class="text-muted mb-0">Total Teachers</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card text-center">
+            <i class="bi bi-book text-warning"></i>
+            <h3 class="mt-2">{{ total_subjects }}</h3>
+            <p class="text-muted mb-0">Total Subjects</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card text-center">
+            <i class="bi bi-clipboard-data text-info"></i>
+            <h3 class="mt-2">{{ total_marks }}</h3>
+            <p class="text-muted mb-0">Total Marks Entries</p>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header">
+        <i class="bi bi-clock-history"></i> Recent Marks Added
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Subject</th>
+                        <th>Term/Year</th>
+                        <th>Marks</th>
+                        <th>Grade</th>
+                        <th>Date Added</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for mark in recent_marks %}
+                    <tr>
+                        <td>{{ mark.student.user.get_full_name }}</td>
+                        <td>{{ mark.subject.name }}</td>
+                        <td>Term {{ mark.term }}/{{ mark.year }}</td>
+                        <td>{{ mark.marks_obtained }}/{{ mark.total_marks }}</td>
+                        <td><span class="badge bg-primary">{{ mark.grade }}</span></td>
+                        <td>{{ mark.created_at|date:"M d, Y" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">No marks added yet</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

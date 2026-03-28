@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}Teacher Dashboard{% endblock %}
+
+{% block sidebar %}
+<li class="nav-item">
+    <a class="nav-link active" href="{% url 'teacher_dashboard' %}">
+        <i class="bi bi-speedometer2"></i> Dashboard
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'teacher_students' %}">
+        <i class="bi bi-people"></i> Students
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'teacher_add_marks' %}">
+        <i class="bi bi-plus-circle"></i> Add Marks
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'teacher_view_marks' %}">
+        <i class="bi bi-clipboard-data"></i> View Marks
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'teacher_mark_attendance' %}">
+        <i class="bi bi-clipboard-check"></i> Mark Attendance
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'teacher_view_attendance' %}">
+        <i class="bi bi-calendar-check"></i> View Attendance
+    </a>
+</li>
+{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 text-white"><i class="bi bi-speedometer2"></i> Teacher Dashboard</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="stat-card text-center">
+            <i class="bi bi-book text-primary"></i>
+            <h3 class="mt-2">{{ subjects.count }}</h3>
+            <p class="text-muted mb-0">Subjects Assigned</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card text-center">
+            <i class="bi bi-clipboard-check text-success"></i>
+            <h3 class="mt-2">{{ marks_added }}</h3>
+            <p class="text-muted mb-0">Marks Added</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card text-center">
+            <i class="bi bi-person-badge text-info"></i>
+            <h3 class="mt-2">{{ teacher.employee_id }}</h3>
+            <p class="text-muted mb-0">Employee ID</p>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header">
+        <i class="bi bi-book"></i> My Subjects
+    </div>
+    <div class="card-body">
+        {% if subjects %}
+        <div class="row">
+            {% for subject in subjects %}
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ subject.name }}</h5>
+                        <p class="card-text text-muted">Code: {{ subject.code }}</p>
+                        <p class="card-text"><small>{{ subject.description|default:"No description" }}</small></p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-muted text-center">No subjects assigned yet</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header">
+        <i class="bi bi-info-circle"></i> Quick Actions
+    </div>
+    <div class="card-body">
+        <div class="d-grid gap-2 d-md-flex">
+            <a href="{% url 'teacher_add_marks' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Add New Marks
+            </a>
+            <a href="{% url 'teacher_view_marks' %}" class="btn btn-secondary">
+                <i class="bi bi-eye"></i> View All Marks
+            </a>
+            <a href="{% url 'teacher_students' %}" class="btn btn-info">
+                <i class="bi bi-people"></i> View Students
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

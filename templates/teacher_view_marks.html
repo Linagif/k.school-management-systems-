@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}View Marks - Teacher{% endblock %}
+
+{% block sidebar %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'teacher_dashboard' %}">
+        <i class="bi bi-speedometer2"></i> Dashboard
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'teacher_students' %}">
+        <i class="bi bi-people"></i> Students
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'teacher_add_marks' %}">
+        <i class="bi bi-plus-circle"></i> Add Marks
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" href="{% url 'teacher_view_marks' %}">
+        <i class="bi bi-clipboard-data"></i> View Marks
+    </a>
+</li>
+{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 text-white"><i class="bi bi-clipboard-data"></i> Marks Added by Me</h1>
+
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-list"></i> My Marks Records
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Subject</th>
+                        <th>Term/Year</th>
+                        <th>Marks</th>
+                        <th>Percentage</th>
+                        <th>Grade</th>
+                        <th>Date Added</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for mark in marks %}
+                    <tr>
+                        <td>{{ mark.student.user.get_full_name }}</td>
+                        <td>{{ mark.subject.name }}</td>
+                        <td>Term {{ mark.term }}/{{ mark.year }}</td>
+                        <td>{{ mark.marks_obtained }}/{{ mark.total_marks }}</td>
+                        <td>{{ mark.get_percentage|floatformat:2 }}%</td>
+                        <td><span class="badge bg-primary">{{ mark.grade }}</span></td>
+                        <td>{{ mark.created_at|date:"M d, Y" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">No marks added yet</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}All Students - Admin{% endblock %}
+
+{% block sidebar %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'admin_dashboard' %}">
+        <i class="bi bi-speedometer2"></i> Dashboard
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" href="{% url 'admin_students' %}">
+        <i class="bi bi-people"></i> Students
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'admin_marks' %}">
+        <i class="bi bi-clipboard-data"></i> All Marks
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="/admin/">
+        <i class="bi bi-gear"></i> Admin Panel
+    </a>
+</li>
+{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 text-white"><i class="bi bi-people"></i> All Students</h1>
+
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-list"></i> Student List
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Admission No.</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Grade</th>
+                        <th>Date of Birth</th>
+                        <th>Parent</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td>{{ student.admission_number }}</td>
+                        <td>{{ student.user.get_full_name }}</td>
+                        <td>{{ student.user.email }}</td>
+                        <td><span class="badge bg-info">{{ student.grade }}</span></td>
+                        <td>{{ student.date_of_birth|date:"M d, Y" }}</td>
+                        <td>{{ student.parent.get_full_name|default:"Not Assigned" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">No students found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

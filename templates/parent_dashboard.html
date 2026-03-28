@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Parent Dashboard{% endblock %}
+
+{% block sidebar %}
+<li class="nav-item">
+    <a class="nav-link active" href="{% url 'parent_dashboard' %}">
+        <i class="bi bi-speedometer2"></i> Dashboard
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'parent_dashboard' %}">
+        <i class="bi bi-people"></i> My Children
+    </a>
+</li>
+{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 text-white"><i class="bi bi-speedometer2"></i> Parent Dashboard</h1>
+
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-people"></i> My Children
+    </div>
+    <div class="card-body">
+        {% if children %}
+        <div class="row">
+            {% for child in children %}
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="bi bi-person-circle"></i> {{ child.user.get_full_name }}
+                        </h5>
+                        <p class="card-text">
+                            <strong>Admission No:</strong> {{ child.admission_number }}<br>
+                            <strong>Grade:</strong> <span class="badge bg-info">{{ child.grade }}</span><br>
+                            <strong>Date of Birth:</strong> {{ child.date_of_birth|date:"M d, Y" }}
+                        </p>
+                        <a href="{% url 'parent_view_child_marks' child.id %}" class="btn btn-primary">
+                            <i class="bi bi-clipboard-data"></i> View Marks
+                        </a>
+                        <a href="{% url 'parent_view_child_attendance' child.id %}" class="btn btn-info">
+                            <i class="bi bi-calendar-check"></i> View Attendance
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-inbox" style="font-size: 4rem; color: #ccc;"></i>
+            <p class="text-muted mt-3">No children assigned to your account yet.</p>
+            <p class="text-muted">Please contact the administrator.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

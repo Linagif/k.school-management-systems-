@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign Up - School Management System{% endblock %}
+
+{% block login_content %}
+<div class="row justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="col-md-6">
+        <div class="card shadow-lg">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <i class="bi bi-person-plus" style="font-size: 4rem; color: #667eea;"></i>
+                    <h2 class="mt-3">Create Account</h2>
+                    <p class="text-muted">Sign up for School Management System</p>
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="first_name" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="first_name" name="first_name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="last_name" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="last_name" name="last_name" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="confirm_password" class="form-label">Confirm Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="user_type" class="form-label">User Type</label>
+                        <select class="form-select" id="user_type" name="user_type" required onchange="toggleExtraFields()">
+                            <option value="">Select user type...</option>
+                            <option value="student">Student</option>
+                            <option value="teacher">Teacher</option>
+                            <option value="parent">Parent</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Student Fields -->
+                    <div id="student_fields" style="display: none;">
+                        <div class="mb-3">
+                            <label for="admission_number" class="form-label">Admission Number</label>
+                            <input type="text" class="form-control" id="admission_number" name="admission_number">
+                        </div>
+                        <div class="mb-3">
+                            <label for="grade" class="form-label">Grade/Class</label>
+                            <input type="text" class="form-control" id="grade" name="grade" placeholder="e.g., Grade 10">
+                        </div>
+                        <div class="mb-3">
+                            <label for="date_of_birth" class="form-label">Date of Birth</label>
+                            <input type="date" class="form-control" id="date_of_birth" name="date_of_birth">
+                        </div>
+                    </div>
+                    
+                    <!-- Teacher Fields -->
+                    <div id="teacher_fields" style="display: none;">
+                        <div class="mb-3">
+                            <label for="employee_id" class="form-label">Employee ID</label>
+                            <input type="text" class="form-control" id="employee_id" name="employee_id">
+                        </div>
+                        <div class="mb-3">
+                            <label for="specialization" class="form-label">Specialization</label>
+                            <input type="text" class="form-control" id="specialization" name="specialization" placeholder="e.g., Mathematics">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone Number</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-phone"></i></span>
+                            <input type="text" class="form-control" id="phone" name="phone">
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100 py-2">
+                        <i class="bi bi-person-plus"></i> Sign Up
+                    </button>
+                </form>
+                
+                <div class="mt-4 text-center">
+                    <p class="mb-0">Already have an account? 
+                        <a href="{% url 'login' %}" style="color: #667eea; text-decoration: none;">Login here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleExtraFields() {
+    var userType = document.getElementById('user_type').value;
+    var studentFields = document.getElementById('student_fields');
+    var teacherFields = document.getElementById('teacher_fields');
+    
+    // Hide all first
+    studentFields.style.display = 'none';
+    teacherFields.style.display = 'none';
+    
+    // Show relevant fields
+    if (userType === 'student') {
+        studentFields.style.display = 'block';
+        document.getElementById('admission_number').required = true;
+        document.getElementById('date_of_birth').required = true;
+        document.getElementById('grade').required = true;
+    } else if (userType === 'teacher') {
+        teacherFields.style.display = 'block';
+        document.getElementById('employee_id').required = true;
+        document.getElementById('specialization').required = true;
+    } else {
+        // Parent - no extra fields
+        document.getElementById('admission_number').required = false;
+        document.getElementById('date_of_birth').required = false;
+        document.getElementById('grade').required = false;
+        document.getElementById('employee_id').required = false;
+        document.getElementById('specialization').required = false;
+    }
+}
+</script>
+{% endblock %}
