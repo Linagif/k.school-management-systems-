@@ -105,7 +105,7 @@ class BaseSignupForm(forms.Form):
 
     def clean(self):
         """Validate passwords match"""
-        cleaned_data = super().clean()
+        cleaned_data = super().clean() or {}
         password = cleaned_data.get('password')
         confirm_password = cleaned_data.get('confirm_password')
 
@@ -227,7 +227,7 @@ class MarkForm(forms.ModelForm):
 
     def clean(self):
         """Validate marks data"""
-        cleaned_data = super().clean()
+        cleaned_data = super().clean() or {}
         marks_obtained = cleaned_data.get('marks_obtained')
         total_marks = cleaned_data.get('total_marks')
 
@@ -331,7 +331,7 @@ class FilterAttendanceForm(forms.Form):
 
     def clean(self):
         """Validate date range"""
-        cleaned_data = super().clean()
+        cleaned_data = super().clean() or {}
         date_from = cleaned_data.get('date_from')
         date_to = cleaned_data.get('date_to')
 

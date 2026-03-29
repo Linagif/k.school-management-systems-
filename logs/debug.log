@@ -11,3 +11,4 @@ INFO 2026-03-28 21:38:30 log 22288 13020 "GET /teacher-dashboard/ HTTP/1.1" 200 
 INFO 2026-03-28 21:38:37 log 22288 13020 "GET /teacher/view-marks/ HTTP/1.1" 200 5118
 INFO 2026-03-28 21:38:41 log 22288 13020 "GET /teacher/students/ HTTP/1.1" 200 5593
 INFO 2026-03-28 21:38:46 log 22288 13020 "GET /teacher-dashboard/ HTTP/1.1" 200 5951
+INFO 2026-03-29 06:47:42 autoreload 22288 8492 C:\Users\hp\Desktop\k.junior school\core\models.py changed, reloading.

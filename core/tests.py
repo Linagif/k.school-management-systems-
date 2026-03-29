@@ -24,8 +24,8 @@ logger = logging.getLogger(__name__)
 class UserProfileModelTest(TestCase):
     """Test UserProfile model"""
     
-    def setUp(self):
-        self.user = User.objects.create_user(
+    def setUp(self) -> None:
+        self.user: User = User.objects.create_user(
             username='testuser',
             email='test@test.com',
             password='TestPass123'
@@ -55,14 +55,14 @@ class UserProfileModelTest(TestCase):
 class StudentModelTest(TestCase):
     """Test Student model"""
     
-    def setUp(self):
-        self.user = User.objects.create_user(
+    def setUp(self) -> None:
+        self.user: User = User.objects.create_user(
             username='student1',
             first_name='John',
             last_name='Doe',
             password='StudentPass123'
         )
-        self.student = Student.objects.create(
+        self.student: Student = Student.objects.create(
             user=self.user,
             admission_number='STU001',
             date_of_birth='2010-01-01',
@@ -92,14 +92,14 @@ class StudentModelTest(TestCase):
 class TeacherModelTest(TestCase):
     """Test Teacher model"""
     
-    def setUp(self):
-        self.user = User.objects.create_user(
+    def setUp(self) -> None:
+        self.user: User = User.objects.create_user(
             username='teacher1',
             first_name='Jane',
             last_name='Smith',
             password='TeacherPass123'
         )
-        self.teacher = Teacher.objects.create(
+        self.teacher: Teacher = Teacher.objects.create(
             user=self.user,
             employee_id='TECH001',
             specialization='Mathematics'
@@ -127,20 +127,20 @@ class TeacherModelTest(TestCase):
 class MarkModelTest(TestCase):
     """Test Mark model"""
     
-    def setUp(self):
-        self.user = User.objects.create_user('student1', password='pass123')
-        self.student = Student.objects.create(
+    def setUp(self) -> None:
+        self.user: User = User.objects.create_user('student1', password='pass123')
+        self.student: Student = Student.objects.create(
             user=self.user,
             admission_number='STU001',
             date_of_birth='2010-01-01',
             grade='10A'
         )
-        self.subject = Subject.objects.create(
+        self.subject: Subject = Subject.objects.create(
             name='Mathematics',
             code='MATH101'
         )
-        self.teacher_user = User.objects.create_user('teacher1', password='pass123')
-        self.teacher = Teacher.objects.create(
+        self.teacher_user: User = User.objects.create_user('teacher1', password='pass123')
+        self.teacher: Teacher = Teacher.objects.create(
             user=self.teacher_user,
             employee_id='TECH001',
             specialization='Mathematics'
@@ -220,16 +220,16 @@ class MarkModelTest(TestCase):
 class AttendanceModelTest(TestCase):
     """Test Attendance model"""
     
-    def setUp(self):
-        self.user = User.objects.create_user('student1', password='pass123')
-        self.student = Student.objects.create(
+    def setUp(self) -> None:
+        self.user: User = User.objects.create_user('student1', password='pass123')
+        self.student: Student = Student.objects.create(
             user=self.user,
             admission_number='STU001',
             date_of_birth='2010-01-01',
             grade='10A'
         )
-        self.teacher_user = User.objects.create_user('teacher1', password='pass123')
-        self.teacher = Teacher.objects.create(
+        self.teacher_user: User = User.objects.create_user('teacher1', password='pass123')
+        self.teacher: Teacher = Teacher.objects.create(
             user=self.teacher_user,
             employee_id='TECH001',
             specialization='Mathematics'
@@ -369,15 +369,15 @@ class StudentSignupFormTest(TestCase):
 class MarkFormTest(TestCase):
     """Test MarkForm"""
     
-    def setUp(self):
-        self.student_user = User.objects.create_user('student1', password='pass123')
-        self.student = Student.objects.create(
+    def setUp(self) -> None:
+        self.student_user: User = User.objects.create_user('student1', password='pass123')
+        self.student: Student = Student.objects.create(
             user=self.student_user,
             admission_number='STU001',
             date_of_birth='2010-01-01',
             grade='10A'
         )
-        self.subject = Subject.objects.create(
+        self.subject: Subject = Subject.objects.create(
             name='Mathematics',
             code='MATH101'
         )
@@ -385,8 +385,8 @@ class MarkFormTest(TestCase):
     def test_valid_mark_form(self):
         """Test valid mark form"""
         form = MarkForm(data={
-            'student': self.student.id,
-            'subject': self.subject.id,
+            'student': self.student.id,  # type: ignore[attr-defined]
+            'subject': self.subject.id,  # type: ignore[attr-defined]
             'term': '1',
             'year': 2024,
             'marks_obtained': '85.50',
@@ -397,8 +397,8 @@ class MarkFormTest(TestCase):
     def test_marks_exceeding_total(self):
         """Test marks cannot exceed total marks"""
         form = MarkForm(data={
-            'student': self.student.id,
-            'subject': self.subject.id,
+            'student': self.student.id,  # type: ignore[attr-defined]
+            'subject': self.subject.id,  # type: ignore[attr-defined]
             'term': '1',
             'year': 2024,
             'marks_obtained': '150',
@@ -412,19 +412,19 @@ class MarkFormTest(TestCase):
 class ViewsTest(TestCase):
     """Test views with proper access control"""
     
-    def setUp(self):
-        self.client = Client()
+    def setUp(self) -> None:
+        self.client: Client = Client()
         
         # Create test users
-        self.student_user = User.objects.create_user(
+        self.student_user: User = User.objects.create_user(
             username='student',
             password='StudentPass123'
         )
-        self.teacher_user = User.objects.create_user(
+        self.teacher_user: User = User.objects.create_user(
             username='teacher',
             password='TeacherPass123'
         )
-        self.admin_user = User.objects.create_user(
+        self.admin_user: User = User.objects.create_user(
             username='admin',
             password='AdminPass123',
             is_superuser=True
@@ -449,14 +449,15 @@ class ViewsTest(TestCase):
         self.client.login(username='student', password='StudentPass123')
         response = self.client.get(reverse('login'))
         self.assertEqual(response.status_code, 302)
-        self.assertIn('dashboard', response.url)
+        self.assertIn('dashboard', response.url if hasattr(response, 'url') else response.get('Location', ''))  # type: ignore[attr-defined]
     
     def test_dashboard_requires_login(self):
         """Test dashboard requires login"""
         response = self.client.get(reverse('dashboard'))
         self.assertEqual(response.status_code, 302)
         # Check if redirects to login (URL contains 'login' or redirects with next parameter)
-        self.assertTrue('login' in response.url.lower() or 'next=' in response.url)
+        redirect_url = response.url if hasattr(response, 'url') else response.get('Location', '')  # type: ignore[attr-defined]
+        self.assertTrue('login' in redirect_url.lower() or 'next=' in redirect_url)
     
     def test_student_cannot_access_teacher_dashboard(self):
         """Test student cannot access teacher dashboard"""
@@ -470,8 +471,8 @@ class ViewsTest(TestCase):
 class FullFlowTest(TestCase):
     """Test complete user flows"""
     
-    def setUp(self):
-        self.client = Client()
+    def setUp(self) -> None:
+        self.client: Client = Client()
     
     def test_student_signup_and_login(self):
         """Test student signup and login flow"""
@@ -515,4 +516,4 @@ class FullFlowTest(TestCase):
         # Verify user and profile created
         user = User.objects.get(username='johndoe')
         self.assertTrue(hasattr(user, 'profile'))
-        self.assertEqual(user.profile.user_type, 'student')
+        self.assertEqual(user.profile.user_type, 'student')  # type: ignore[attr-defined]
