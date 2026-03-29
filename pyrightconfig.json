@@ -1,0 +1,12 @@
+{
+  "include": ["core", "school_management"],
+  "exclude": ["venv", ".git", "__pycache__", "*.pyc"],
+  "typeCheckingMode": "basic",
+  "pythonVersion": "3.10",
+  "pythonPlatform": "Windows",
+  "venvPath": ".",
+  "reportMissingModuleSource": "warning",
+  "reportMissingImports": "warning",
+  "reportUntypedFunctionCalls": "none",
+  "reportPrivateUsage": "none"
+}
