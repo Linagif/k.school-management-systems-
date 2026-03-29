@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -67,7 +68,7 @@ class Mark(models.Model):
     term = models.CharField(max_length=1, choices=TERM_CHOICES)
     year = models.IntegerField()
     marks_obtained = models.DecimalField(max_digits=5, decimal_places=2)
-    total_marks = models.DecimalField(max_digits=5, decimal_places=2, default=100)
+    total_marks = models.DecimalField(max_digits=5, decimal_places=2, default=Decimal('100'))
     grade = models.CharField(max_length=2, blank=True)
     remarks = models.TextField(blank=True, null=True)
     added_by = models.ForeignKey(Teacher, on_delete=models.SET_NULL, null=True, related_name='marks_added')

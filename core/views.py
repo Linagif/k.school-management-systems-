@@ -120,11 +120,19 @@ def dashboard(request):
             return redirect('student_dashboard')
         elif user_type == 'parent':
             return redirect('parent_dashboard')
+        else:
+            # Default fallback for unexpected user types
+            messages.error(request, 'Unknown user type. Please contact administrator.')
+            return redirect('login')
     except UserProfile.DoesNotExist:
         # If user is superuser without profile, redirect to admin
         if request.user.is_superuser:
             return redirect('admin_dashboard')
         messages.error(request, 'User profile not found. Please contact administrator.')
+        return redirect('login')
+    except Exception:
+        # Catch any other exceptions and redirect safely
+        messages.error(request, 'An error occurred. Please login again.')
         return redirect('login')
 
 # Admin Dashboard
