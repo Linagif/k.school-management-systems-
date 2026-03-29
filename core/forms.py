@@ -11,7 +11,7 @@ class LoginForm(forms.Form):
         widget=forms.TextInput(attrs={
             'class': 'form-control',
             'placeholder': 'Enter your username',
-            'autocomplete': 'username'
+            'autocomplete': 'off'
         })
     )
     password = forms.CharField(
@@ -115,19 +115,42 @@ class BaseSignupForm(forms.Form):
         return cleaned_data
 
 
-class StudentSignupForm(BaseSignupForm):
-    """Form for student registration"""
+class StudentSignupForm(forms.Form):
+    """Form for student registration - minimal form with just name, password, admission_number, and grade"""
+    first_name = forms.CharField(
+        max_length=150,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'First Name'
+        })
+    )
+    last_name = forms.CharField(
+        max_length=150,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Last Name'
+        })
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Password',
+            'autocomplete': 'new-password'
+        }),
+        help_text='Password must be at least 8 characters long.'
+    )
+    confirm_password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Confirm Password',
+            'autocomplete': 'new-password'
+        })
+    )
     admission_number = forms.CharField(
         max_length=20,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
             'placeholder': 'Admission Number'
-        })
-    )
-    date_of_birth = forms.DateField(
-        widget=forms.DateInput(attrs={
-            'class': 'form-control',
-            'type': 'date'
         })
     )
     grade = forms.CharField(
@@ -139,27 +162,74 @@ class StudentSignupForm(BaseSignupForm):
     )
 
     def clean_admission_number(self):
-        """Validate admission number is unique"""
+        """Validate admission number is unique and can be used as username"""
         admission_number = self.cleaned_data.get('admission_number', '').strip()
         if Student.objects.filter(admission_number=admission_number).exists():
             raise ValidationError('Admission number already exists. Please use a different one.')
+        # Check if admission_number would conflict with existing usernames
+        if User.objects.filter(username=admission_number).exists():
+            raise ValidationError('This admission number is already in use.')
         return admission_number
 
+    def clean_password(self):
+        """Validate password strength"""
+        password = self.cleaned_data.get('password', '')
+        if len(password) < 8:
+            raise ValidationError('Password must be at least 8 characters long.')
+        if not any(char.isupper() for char in password):
+            raise ValidationError('Password must contain at least one uppercase letter.')
+        if not any(char.isdigit() for char in password):
+            raise ValidationError('Password must contain at least one digit.')
+        return password
 
-class TeacherSignupForm(BaseSignupForm):
-    """Form for teacher registration"""
+    def clean(self):
+        """Validate passwords match"""
+        cleaned_data = super().clean() or {}
+        password = cleaned_data.get('password')
+        confirm_password = cleaned_data.get('confirm_password')
+
+        if password and confirm_password:
+            if password != confirm_password:
+                raise ValidationError('Passwords do not match.')
+        return cleaned_data
+
+
+class TeacherSignupForm(forms.Form):
+    """Form for teacher registration - minimal form with just name, password, and employee_id"""
+    first_name = forms.CharField(
+        max_length=150,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'First Name'
+        })
+    )
+    last_name = forms.CharField(
+        max_length=150,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Last Name'
+        })
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Password',
+            'autocomplete': 'new-password'
+        }),
+        help_text='Password must be at least 8 characters long.'
+    )
+    confirm_password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Confirm Password',
+            'autocomplete': 'new-password'
+        })
+    )
     employee_id = forms.CharField(
         max_length=20,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
             'placeholder': 'Employee ID'
-        })
-    )
-    specialization = forms.CharField(
-        max_length=100,
-        widget=forms.TextInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Subject Specialization'
         })
     )
 
@@ -169,6 +239,28 @@ class TeacherSignupForm(BaseSignupForm):
         if Teacher.objects.filter(employee_id=employee_id).exists():
             raise ValidationError('Employee ID already exists. Please use a different one.')
         return employee_id
+
+    def clean_password(self):
+        """Validate password strength"""
+        password = self.cleaned_data.get('password', '')
+        if len(password) < 8:
+            raise ValidationError('Password must be at least 8 characters long.')
+        if not any(char.isupper() for char in password):
+            raise ValidationError('Password must contain at least one uppercase letter.')
+        if not any(char.isdigit() for char in password):
+            raise ValidationError('Password must contain at least one digit.')
+        return password
+
+    def clean(self):
+        """Validate passwords match"""
+        cleaned_data = super().clean() or {}
+        password = cleaned_data.get('password')
+        confirm_password = cleaned_data.get('confirm_password')
+
+        if password and confirm_password:
+            if password != confirm_password:
+                raise ValidationError('Passwords do not match.')
+        return cleaned_data
 
 
 class ParentSignupForm(BaseSignupForm):

@@ -283,9 +283,9 @@ class LoginFormTest(TestCase):
     
     def test_valid_form(self):
         """Test valid login form"""
-        user = User.objects.create_user('testuser', password='TestPass123')
+        user = User.objects.create_user('testuser', first_name='John', password='TestPass123')
         form = LoginForm(data={
-            'username': 'testuser',
+            'first_name': 'John',
             'password': 'TestPass123'
         })
         self.assertTrue(form.is_valid())
@@ -294,7 +294,7 @@ class LoginFormTest(TestCase):
         """Test empty login form is invalid"""
         form = LoginForm(data={})
         self.assertFalse(form.is_valid())
-        self.assertIn('username', form.errors)
+        self.assertIn('first_name', form.errors)
 
 
 class StudentSignupFormTest(TestCase):
@@ -305,13 +305,9 @@ class StudentSignupFormTest(TestCase):
         form = StudentSignupForm(data={
             'first_name': 'John',
             'last_name': 'Doe',
-            'username': 'johndoe',
-            'email': 'john@example.com',
             'password': 'SecurePass123',
             'confirm_password': 'SecurePass123',
-            'phone': '1234567890',
             'admission_number': 'ADM001',
-            'date_of_birth': '2010-01-01',
             'grade': '10A'
         })
         self.assertTrue(form.is_valid())
@@ -321,12 +317,9 @@ class StudentSignupFormTest(TestCase):
         form = StudentSignupForm(data={
             'first_name': 'John',
             'last_name': 'Doe',
-            'username': 'johndoe',
-            'email': 'john@example.com',
             'password': 'SecurePass123',
             'confirm_password': 'DifferentPass123',
             'admission_number': 'ADM001',
-            'date_of_birth': '2010-01-01',
             'grade': '10A'
         })
         self.assertFalse(form.is_valid())
@@ -338,29 +331,29 @@ class StudentSignupFormTest(TestCase):
         form = StudentSignupForm(data={
             'first_name': 'John',
             'last_name': 'Doe',
-            'username': 'johndoe',
-            'email': 'john@example.com',
             'password': 'weak',
             'confirm_password': 'weak',
             'admission_number': 'ADM001',
-            'date_of_birth': '2010-01-01',
             'grade': '10A'
         })
         self.assertFalse(form.is_valid())
     
-    def test_duplicate_username(self):
-        """Test duplicate username validation"""
-        User.objects.create_user('johndoe', password='pass123')
+    def test_duplicate_admission_number(self):
+        """Test duplicate admission number validation"""
+        # Create an existing student first
+        user = User.objects.create_user('STU001', password='pass123')
+        Student.objects.create(
+            user=user,
+            admission_number='ADM001',
+            grade='10A'
+        )
         
         form = StudentSignupForm(data={
             'first_name': 'John',
             'last_name': 'Doe',
-            'username': 'johndoe',
-            'email': 'john@example.com',
             'password': 'SecurePass123',
             'confirm_password': 'SecurePass123',
             'admission_number': 'ADM001',
-            'date_of_birth': '2010-01-01',
             'grade': '10A'
         })
         self.assertFalse(form.is_valid())
@@ -418,14 +411,17 @@ class ViewsTest(TestCase):
         # Create test users
         self.student_user: User = User.objects.create_user(
             username='student',
+            first_name='Student',
             password='StudentPass123'
         )
         self.teacher_user: User = User.objects.create_user(
             username='teacher',
+            first_name='Teacher',
             password='TeacherPass123'
         )
         self.admin_user: User = User.objects.create_user(
             username='admin',
+            first_name='Admin',
             password='AdminPass123',
             is_superuser=True
         )
@@ -479,13 +475,9 @@ class FullFlowTest(TestCase):
         signup_data = {
             'first_name': 'John',
             'last_name': 'Doe',
-            'username': 'johndoe',
-            'email': 'john@example.com',
             'password': 'StudentPass123',
             'confirm_password': 'StudentPass123',
-            'phone': '1234567890',
             'admission_number': 'STU001',
-            'date_of_birth': '2010-01-01',
             'grade': '10A'
         }
         
@@ -494,26 +486,24 @@ class FullFlowTest(TestCase):
         self.assertTrue(form.is_valid())
         
         # Actually create the user and profile from form data
+        admission_number = form.cleaned_data['admission_number']
         user = User.objects.create_user(
-            username=form.cleaned_data['username'],
-            email=form.cleaned_data['email'],
+            username=admission_number,  # Use admission number as username
             password=form.cleaned_data['password'],
             first_name=form.cleaned_data['first_name'],
             last_name=form.cleaned_data['last_name']
         )
         UserProfile.objects.create(
             user=user,
-            user_type='student',
-            phone=form.cleaned_data.get('phone', '')
+            user_type='student'
         )
         Student.objects.create(
             user=user,
             admission_number=form.cleaned_data['admission_number'],
-            date_of_birth=form.cleaned_data['date_of_birth'],
             grade=form.cleaned_data['grade']
         )
         
         # Verify user and profile created
-        user = User.objects.get(username='johndoe')
+        user = User.objects.get(username='STU001')
         self.assertTrue(hasattr(user, 'profile'))
         self.assertEqual(user.profile.user_type, 'student')  # type: ignore[attr-defined]

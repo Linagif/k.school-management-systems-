@@ -16,6 +16,16 @@
                 <form method="post">
                     {% csrf_token %}
                     
+                    <div class="mb-3">
+                        <label for="user_type" class="form-label">User Type</label>
+                        <select class="form-select" id="user_type" name="user_type" required onchange="toggleExtraFields()">
+                            <option value="">Select user type...</option>
+                            <option value="student">Student</option>
+                            <option value="teacher">Teacher</option>
+                            <option value="parent">Parent</option>
+                        </select>
+                    </div>
+                    
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="first_name" class="form-label">First Name</label>
@@ -27,22 +37,6 @@
                         </div>
                     </div>
                     
-                    <div class="mb-3">
-                        <label for="username" class="form-label">Username</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-person"></i></span>
-                            <input type="text" class="form-control" id="username" name="username" required>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                            <input type="email" class="form-control" id="email" name="email" required>
-                        </div>
-                    </div>
-                    
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="password" class="form-label">Password</label>
@@ -50,6 +44,7 @@
                                 <span class="input-group-text"><i class="bi bi-lock"></i></span>
                                 <input type="password" class="form-control" id="password" name="password" required>
                             </div>
+                            <small class="form-text text-muted">Min 8 characters, 1 uppercase letter, 1 digit</small>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="confirm_password" class="form-label">Confirm Password</label>
@@ -60,30 +55,19 @@
                         </div>
                     </div>
                     
-                    <div class="mb-3">
-                        <label for="user_type" class="form-label">User Type</label>
-                        <select class="form-select" id="user_type" name="user_type" required onchange="toggleExtraFields()">
-                            <option value="">Select user type...</option>
-                            <option value="student">Student</option>
-                            <option value="teacher">Teacher</option>
-                            <option value="parent">Parent</option>
-                        </select>
-                    </div>
-                    
                     <!-- Student Fields -->
                     <div id="student_fields" style="display: none;">
-                        <div class="mb-3">
-                            <label for="admission_number" class="form-label">Admission Number</label>
-                            <input type="text" class="form-control" id="admission_number" name="admission_number">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="admission_number" class="form-label">Admission Number</label>
+                                <input type="text" class="form-control" id="admission_number" name="admission_number" placeholder="e.g., STU001">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="grade" class="form-label">Grade/Class</label>
+                                <input type="text" class="form-control" id="grade" name="grade" placeholder="e.g., Grade 10">
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="grade" class="form-label">Grade/Class</label>
-                            <input type="text" class="form-control" id="grade" name="grade" placeholder="e.g., Grade 10">
-                        </div>
-                        <div class="mb-3">
-                            <label for="date_of_birth" class="form-label">Date of Birth</label>
-                            <input type="date" class="form-control" id="date_of_birth" name="date_of_birth">
-                        </div>
+                        <small class="form-text text-muted d-block mb-3">Your admission number will be used as your login username</small>
                     </div>
                     
                     <!-- Teacher Fields -->
@@ -92,17 +76,30 @@
                             <label for="employee_id" class="form-label">Employee ID</label>
                             <input type="text" class="form-control" id="employee_id" name="employee_id">
                         </div>
-                        <div class="mb-3">
-                            <label for="specialization" class="form-label">Specialization</label>
-                            <input type="text" class="form-control" id="specialization" name="specialization" placeholder="e.g., Mathematics">
-                        </div>
                     </div>
                     
-                    <div class="mb-3">
-                        <label for="phone" class="form-label">Phone Number</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-phone"></i></span>
-                            <input type="text" class="form-control" id="phone" name="phone">
+                    <!-- Parent Fields -->
+                    <div id="parent_fields" style="display: none;">
+                        <div class="mb-3">
+                            <label for="username_parent" class="form-label">Username</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                <input type="text" class="form-control" id="username_parent" name="username">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email_parent" class="form-label">Email</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                <input type="email" class="form-control" id="email_parent" name="email">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone_parent" class="form-label">Phone Number</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-phone"></i></span>
+                                <input type="text" class="form-control" id="phone_parent" name="phone">
+                            </div>
                         </div>
                     </div>
                     
@@ -126,28 +123,33 @@ function toggleExtraFields() {
     var userType = document.getElementById('user_type').value;
     var studentFields = document.getElementById('student_fields');
     var teacherFields = document.getElementById('teacher_fields');
+    var parentFields = document.getElementById('parent_fields');
     
-    // Hide all first
+    // Hide all fields first
     studentFields.style.display = 'none';
     teacherFields.style.display = 'none';
+    parentFields.style.display = 'none';
     
-    // Show relevant fields
+    // Clear required attributes
+    document.getElementById('admission_number').required = false;
+    document.getElementById('grade').required = false;
+    document.getElementById('employee_id').required = false;
+    document.getElementById('username_parent').required = false;
+    document.getElementById('email_parent').required = false;
+    document.getElementById('phone_parent').required = false;
+    
+    // Show relevant fields based on user type
     if (userType === 'student') {
         studentFields.style.display = 'block';
         document.getElementById('admission_number').required = true;
-        document.getElementById('date_of_birth').required = true;
         document.getElementById('grade').required = true;
     } else if (userType === 'teacher') {
         teacherFields.style.display = 'block';
         document.getElementById('employee_id').required = true;
-        document.getElementById('specialization').required = true;
-    } else {
-        // Parent - no extra fields
-        document.getElementById('admission_number').required = false;
-        document.getElementById('date_of_birth').required = false;
-        document.getElementById('grade').required = false;
-        document.getElementById('employee_id').required = false;
-        document.getElementById('specialization').required = false;
+    } else if (userType === 'parent') {
+        parentFields.style.display = 'block';
+        document.getElementById('username_parent').required = true;
+        document.getElementById('email_parent').required = true;
     }
 }
 </script>

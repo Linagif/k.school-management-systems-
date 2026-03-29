@@ -19,6 +19,7 @@ def login_view(request):
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
+            
             user = authenticate(request, username=username, password=password)
             
             if user is not None:
@@ -54,21 +55,53 @@ def signup_view(request):
     if request.method == 'POST':
         form = FormClass(request.POST)
         if form.is_valid():
-            # Create user
-            user = User.objects.create_user(
-                username=form.cleaned_data['username'],
-                email=form.cleaned_data['email'],
-                password=form.cleaned_data['password'],
-                first_name=form.cleaned_data['first_name'],
-                last_name=form.cleaned_data['last_name']
-            )
+            try:
+                # Prepare user creation kwargs
+                user_kwargs = {
+                    'password': form.cleaned_data['password'],
+                    'first_name': form.cleaned_data['first_name'],
+                    'last_name': form.cleaned_data['last_name']
+                }
+                
+                # For student, use admission_number as username
+                if user_type == 'student':
+                    user_kwargs['username'] = form.cleaned_data['admission_number']
+                elif user_type == 'teacher':
+                    # For teacher, generate username from employee_id
+                    user_kwargs['username'] = form.cleaned_data['employee_id']
+                else:
+                    # For parent, use username field if available
+                    if 'username' in form.cleaned_data:
+                        user_kwargs['username'] = form.cleaned_data['username']
+                    else:
+                        messages.error(request, 'Username is required')
+                        return render(request, 'signup.html', {'form': form, 'user_type': user_type})
+                
+                # Add email if form has it (parent forms)
+                if 'email' in form.cleaned_data:
+                    user_kwargs['email'] = form.cleaned_data['email']
+                
+                # Create user
+                user = User.objects.create_user(**user_kwargs)
+            except Exception as e:
+                if 'username' in str(e).lower():
+                    messages.error(request, 'This username/admission number is already taken.')
+                elif 'email' in str(e).lower():
+                    messages.error(request, 'This email is already registered. Please use a different one.')
+                else:
+                    messages.error(request, f'Error creating account: {str(e)}')
+                return render(request, 'signup.html', {'form': form, 'user_type': user_type})
             
             # Create user profile
-            UserProfile.objects.create(
-                user=user,
-                user_type=user_type,
-                phone=form.cleaned_data.get('phone', '')
-            )
+            profile_kwargs = {
+                'user': user,
+                'user_type': user_type
+            }
+            # Add phone if form has it
+            if 'phone' in form.cleaned_data:
+                profile_kwargs['phone'] = form.cleaned_data.get('phone', '')
+            
+            UserProfile.objects.create(**profile_kwargs)
             
             # Create specific profile based on user type
             try:
@@ -76,14 +109,12 @@ def signup_view(request):
                     Student.objects.create(
                         user=user,
                         admission_number=form.cleaned_data['admission_number'],
-                        date_of_birth=form.cleaned_data['date_of_birth'],
                         grade=form.cleaned_data['grade']
                     )
                 elif user_type == 'teacher':
                     Teacher.objects.create(
                         user=user,
-                        employee_id=form.cleaned_data['employee_id'],
-                        specialization=form.cleaned_data['specialization']
+                        employee_id=form.cleaned_data['employee_id']
                     )
                 
                 messages.success(request, f'{user_type.capitalize()} account created successfully! Please login.')
