@@ -382,7 +382,7 @@ def teacher_mark_attendance(request):
     # Get existing attendance for the selected date
     existing_attendance = {}
     for att in Attendance.objects.filter(date=attendance_date):
-        existing_attendance[att.student_id] = att
+        existing_attendance[att.student.id] = att
     
     context = {
         'students': students,
