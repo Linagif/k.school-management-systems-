@@ -18,10 +18,20 @@
         <i class="bi bi-calendar-check"></i> My Attendance
     </a>
 </li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'student_report_card' %}">
+        <i class="bi bi-file-earmark-pdf"></i> Download Report Card
+    </a>
+</li>
 {% endblock %}
 
 {% block content %}
-<h1 class="mb-4 text-white"><i class="bi bi-speedometer2"></i> Student Dashboard</h1>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="text-white"><i class="bi bi-speedometer2"></i> Student Dashboard</h1>
+    <a href="{% url 'student_report_card' %}" class="btn btn-success">
+        <i class="bi bi-file-earmark-pdf"></i> Download Report Card
+    </a>
+</div>
 
 <div class="row">
     <div class="col-md-4">

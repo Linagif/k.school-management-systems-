@@ -265,6 +265,13 @@ class TeacherSignupForm(forms.Form):
 
 class ParentSignupForm(BaseSignupForm):
     """Form for parent registration"""
+    email = forms.EmailField(
+        required=False,
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Email Address (optional)'
+        })
+    )
     address = forms.CharField(
         max_length=255,
         required=False,
@@ -273,6 +280,33 @@ class ParentSignupForm(BaseSignupForm):
             'placeholder': 'Address (optional)',
             'rows': 3
         })
+    )
+    child_name = forms.CharField(
+        max_length=150,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Child\'s Full Name (optional)'
+        }),
+        help_text='Enter your child\'s full name if they are a student at this school.'
+    )
+    child_grade = forms.CharField(
+        max_length=10,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Child\'s Grade/Class (optional)'
+        }),
+        help_text='Enter your child\'s grade or class (e.g., Grade 10, 9B).'
+    )
+    child_admission_number = forms.CharField(
+        max_length=20,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Child\'s Admission Number (optional)'
+        }),
+        help_text='Enter your child\'s admission number if they are already registered.'
     )
 
 

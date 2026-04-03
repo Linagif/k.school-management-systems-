@@ -26,11 +26,19 @@ class Student(models.Model):
     admission_number = models.CharField(max_length=20, unique=True)
     date_of_birth = models.DateField(null=True, blank=True)
     grade = models.CharField(max_length=10)
-    parent = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, 
-                               related_name='children', limit_choices_to={'profile__user_type': 'parent'})
+    parents = models.ManyToManyField(User, related_name='children', blank=True, 
+                                     limit_choices_to={'profile__user_type': 'parent'})
     
     def __str__(self):
         return f"{self.user.get_full_name()} - {self.admission_number}"
+    
+    def get_parents(self):
+        """Return all parents of this student"""
+        return self.parents.all()
+    
+    def can_add_parent(self):
+        """Check if student can have another parent added (max 2)"""
+        return self.parents.count() < 2
 
 
 # Teacher Model
@@ -62,7 +70,6 @@ class Mark(models.Model):
         ('2', 'Term 2'),
         ('3', 'Term 3'),
     )
-    
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='marks')
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='marks')
     term = models.CharField(max_length=1, choices=TERM_CHOICES)

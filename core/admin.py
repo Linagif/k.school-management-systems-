@@ -25,7 +25,7 @@ class UserProfileAdmin(admin.ModelAdmin):
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
     """Enhanced Student admin with full details"""
-    list_display = ['get_full_name', 'admission_number', 'grade', 'parent', 'date_of_birth_short']
+    list_display = ['get_full_name', 'admission_number', 'grade', 'get_parents', 'date_of_birth_short']
     list_filter = ['grade', 'date_of_birth', 'user__is_active']
     search_fields = ['user__username', 'user__first_name', 'user__last_name', 'admission_number']
     readonly_fields = ['user', 'admission_number']
@@ -37,7 +37,7 @@ class StudentAdmin(admin.ModelAdmin):
             'fields': ('grade', 'date_of_birth')
         }),
         ('Parent Information', {
-            'fields': ('parent',)
+            'fields': ('parents',)
         }),
     )
     
@@ -45,6 +45,10 @@ class StudentAdmin(admin.ModelAdmin):
         return obj.user.get_full_name()
     get_full_name.short_description = 'Student Name'
     get_full_name.admin_order_field = 'user__first_name'
+    
+    def get_parents(self, obj):
+        return ", ".join([p.get_full_name() for p in obj.parents.all()])
+    get_parents.short_description = 'Parents'
     
     def date_of_birth_short(self, obj):
         return obj.date_of_birth.strftime('%Y-%m-%d')

@@ -11,8 +11,8 @@ urlpatterns = [
     
     # Admin URLs
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
-    path('admin/students/', views.admin_students, name='admin_students'),
-    path('admin/marks/', views.admin_marks, name='admin_marks'),
+    path('manage/students/', views.admin_students, name='admin_students'),
+    path('manage/marks/', views.admin_marks, name='admin_marks'),
     
     # Teacher URLs
     path('teacher-dashboard/', views.teacher_dashboard, name='teacher_dashboard'),
@@ -29,8 +29,12 @@ urlpatterns = [
     path('parent/child/<int:student_id>/attendance/', views.parent_view_child_attendance, name='parent_view_child_attendance'),
 
     # Attendance URLs
-    path('admin/attendance/', views.admin_attendance, name='admin_attendance'),
+    path('manage/attendance/', views.admin_attendance, name='admin_attendance'),
     path('teacher/mark-attendance/', views.teacher_mark_attendance, name='teacher_mark_attendance'),
     path('teacher/view-attendance/', views.teacher_view_attendance, name='teacher_view_attendance'),
     path('student/attendance/', views.student_attendance, name='student_attendance'),
+    
+    # Report Card URLs
+    path('student/report-card/', views.generate_report_card, name='student_report_card'),
+    path('parent/child/<int:student_id>/report-card/', views.generate_report_card, name='parent_child_report_card'),
 ]

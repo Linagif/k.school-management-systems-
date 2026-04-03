@@ -43,6 +43,9 @@
                         <a href="{% url 'parent_view_child_attendance' child.id %}" class="btn btn-info">
                             <i class="bi bi-calendar-check"></i> View Attendance
                         </a>
+                        <a href="{% url 'parent_child_report_card' child.id %}" class="btn btn-success">
+                            <i class="bi bi-file-earmark-pdf"></i> Download Report Card
+                        </a>
                     </div>
                 </div>
             </div>

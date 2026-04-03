@@ -16,8 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic import RedirectView
 
 urlpatterns = [
+    # Redirect /admin/attendance/ to /admin/core/attendance/
+    path('admin/attendance/', RedirectView.as_view(pattern_name='admin:core_attendance_changelist'), name='admin_attendance_redirect'),
     path('admin/', admin.site.urls),
     path('', include('core.urls')),
 ]
